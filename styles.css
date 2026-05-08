@@ -137,12 +137,14 @@ label span,
 }
 
 input,
+select,
 textarea,
 button {
   font: inherit;
 }
 
 input,
+select,
 textarea {
   width: 100%;
   border: 1px solid var(--line);
@@ -153,6 +155,7 @@ textarea {
 }
 
 input:focus,
+select:focus,
 textarea:focus {
   outline: none;
   border-color: rgba(166, 61, 27, 0.65);
