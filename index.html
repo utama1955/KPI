@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form KPI Karyawan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="page-shell">
+    <section class="hero-card">
+      <div class="brand-block">
+        <p class="brand-kicker">TOKO CAT</p>
+        <h1>UTAMA</h1>
+        <p class="brand-since">SEJAK 1955</p>
+      </div>
+      <div class="hero-copy">
+        <span class="eyebrow">Penilaian Online</span>
+        <h2>Lembar Self Assessment - Staf</h2>
+        <p>Kepala toko dapat mengisi KPI karyawan secara online dan hasilnya langsung dikirim ke Google Sheets.</p>
+      </div>
+    </section>
+
+    <form id="kpiForm" class="form-card">
+      <section class="meta-grid">
+        <label>
+          <span>Nama Karyawan</span>
+          <input type="text" name="nama" placeholder="Masukkan nama" required>
+        </label>
+        <label>
+          <span>Jabatan</span>
+          <input type="text" name="jabatan" placeholder="Contoh: Staf Gudang" required>
+        </label>
+        <label>
+          <span>Cabang</span>
+          <input type="text" name="cabang" placeholder="Masukkan cabang" required>
+        </label>
+        <label>
+          <span>Penilai</span>
+          <input type="text" name="penilai" placeholder="Nama kepala toko" required>
+        </label>
+        <label>
+          <span>Tanggal Penilaian</span>
+          <input type="date" name="tanggal" required>
+        </label>
+        <label>
+          <span>Tanda Tangan / Persetujuan</span>
+          <input type="text" name="ttd" placeholder="Nama penilai sebagai persetujuan" required>
+        </label>
+      </section>
+
+      <section>
+        <div class="section-heading">
+          <h3>Penilaian KPI</h3>
+          <p>Pilih satu nilai untuk setiap indikator: BS = Baik Sekali, B = Baik, C = Cukup, K = Kurang, KS = Kurang Sekali.</p>
+        </div>
+        <div id="criteriaList" class="criteria-list"></div>
+      </section>
+
+      <section class="summary-card">
+        <div>
+          <p class="summary-label">Total Nilai Tertimbang</p>
+          <p id="totalScore" class="summary-score">0.00</p>
+        </div>
+        <div>
+          <p class="summary-label">Predikat</p>
+          <p id="gradeLabel" class="summary-grade">Belum lengkap</p>
+        </div>
+      </section>
+
+      <section class="note-section">
+        <label>
+          <span>Catatan Umum</span>
+          <textarea name="catatan_umum" rows="5" placeholder="Tambahkan ringkasan atau arahan lanjutan"></textarea>
+        </label>
+      </section>
+
+      <div class="actions">
+        <button type="submit" id="submitButton">Kirim ke Google Sheets</button>
+        <p id="formStatus" class="form-status" aria-live="polite"></p>
+      </div>
+    </form>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
