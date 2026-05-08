@@ -1,4 +1,26 @@
-const SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyO01urdBS1BKuF4DqVedXjvUY3l_AzNydJKLPcrk_-N0TabZUFQt5vsDWxN3dKniXc8Q/exec";
+const SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw507uaCMIRgl9Maw4n8tkQSrvoa9vtNxJ-3_hX3WP0tYvSuJKSgU8546XVFMdd0PgrKw/exec";
+
+const branchOptions = [
+  "Manajemen",
+  "Mataram",
+  "Setiabudi",
+  "Siliwangi",
+  "Majapahit",
+  "Mijen",
+  "Pekalongan",
+  "Kab. Pekalongan",
+  "Tanahmas",
+  "Ungaran",
+  "Salatiga",
+  "Mranggen",
+  "Weleri",
+  "BSB",
+  "Kedungmundu",
+  "Ngaliyan Jotun",
+  "Batang",
+  "Kajen",
+  "Woltermonginsidi"
+];
 
 const criteria = [
   {
@@ -71,6 +93,14 @@ const totalScoreEl = document.getElementById("totalScore");
 const gradeLabelEl = document.getElementById("gradeLabel");
 const statusEl = document.getElementById("formStatus");
 const submitButton = document.getElementById("submitButton");
+const cabangSelect = document.getElementById("cabangSelect");
+
+function renderBranchOptions() {
+  cabangSelect.innerHTML = `
+    <option value="" disabled selected>Pilih cabang</option>
+    ${branchOptions.map((branch) => `<option value="${branch}">${branch}</option>`).join("")}
+  `;
+}
 
 function renderCriteria() {
   criteriaList.innerHTML = criteria.map((criterion, index) => {
@@ -208,6 +238,7 @@ function setStatus(message, type = "") {
 }
 
 renderCriteria();
+renderBranchOptions();
 calculateTotalScore();
 document.querySelector('input[name="tanggal"]').valueAsDate = new Date();
 
@@ -223,6 +254,7 @@ form.addEventListener("submit", async (event) => {
     await submitToGoogleSheets(payload);
     setStatus("Data KPI berhasil dikirim ke Google Sheets.", "success");
     form.reset();
+    renderBranchOptions();
     document.querySelector('input[name="tanggal"]').valueAsDate = new Date();
     calculateTotalScore();
   } catch (error) {
