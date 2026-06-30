@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Sistem Tes Kraepelin - Toko Cat Utama</title>
+    <style>
+        :root {
+            --utama-blue: #2c5364;
+            --utama-yellow: #f39c12;
+            --utama-red: #e74c3c;
+            --bg-color: #000000;
+            --card-bg: #ffffff;
+            --text-dark: #1f2933;
+            --muted: #64748b;
+            --line: #dbe6eb;
+            --soft-bg: #f1f4f6;
+            --success: #27ae60;
+            --icon-color: #222;
+        }
+
+        /* Page layout */
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #000000;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        .hr-app-container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--card-bg);
+            border-radius: 14px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        /* Fullscreen button */
+        .fullscreen-btn {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            background: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+            cursor: pointer;
+            transition: transform .12s ease, box-shadow .12s ease;
+            padding: 6px;
+            color: var(--icon-color); /* currentColor for svg stroke */
+        }
+        .fullscreen-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.16); }
+        .fullscreen-btn:active { transform: translateY(0); }
+
+        .fullscreen-btn svg { width: 22px; height: 22px; display: block; }
+        .fullscreen-btn svg path {
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Logo frame */
+        .logo-frame {
+            background: var(--soft-bg);
+            border-radius: 8px;
+            padding: 10px 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 22px;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.02);
+        }
+        .logo-header img {
+            max-width: 320px;
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+        }
+
+        /* Countdown overlay */
+        .countdown-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        .countdown-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .countdown-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--muted);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .countdown-number {
+            font-size: 140px;
+            font-weight: 900;
+            color: var(--utama-blue);
+            line-height: 1;
+            text-shadow: 2px 5px 15px rgba(44, 83, 100, 0.22);
+        }
+
+        /* Components */
+        .progress-container {
+            width: 100%;
+            height: 12px;
+            background: var(--soft-bg);
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            border: 1px solid var(--line);
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #2c5364, #27ae60);
+            transition: width 0.4s ease;
+        }
+
+        .total-timer-box {
+            background: var(--soft-bg);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 5px solid var(--utama-blue);
+            margin-bottom: 25px;
+        }
+        .label-sm {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--muted);
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .timer-main {
+            font-size: 56px;
+            font-weight: 800;
+            color: var(--utama-blue);
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            border: 1px solid var(--line);
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .stat-card strong {
+            font-size: 38px;
+            display: block;
+            margin: 5px 0;
+            color: var(--text-dark);
+        }
+        .target-info {
+            font-size: 13px;
+            color: var(--utama-red);
+            font-weight: 600;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        button {
+            padding: 18px;
+            font-size: 16px;
+            font-weight: 700;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            touch-action: manipulation;
+        }
+        button:active { transform: translateY(2px); }
+        button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .btn-start { background: var(--success); color: white; }
+        .btn-pause { background: var(--utama-yellow); color: white; }
+        .btn-lap { background: var(--utama-blue); color: white; }
+        .btn-reset { background: #6c757d; color: white; }
+
+        .flash { animation: flash-animation 0.5s; }
+        @keyframes flash-animation {
+            0% { background-color: white; }
+            50% { background-color: #e8f6ef; }
+            100% { background-color: white; }
+        }
+
+        .btn-back {
+            display: inline-block;
+            margin: 18px auto 0;
+            padding: 12px 20px;
+            background: #0f1720;
+            color: #fff;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            box-shadow: 0 6px 14px rgba(15,23,32,0.12);
+        }
+        .btn-back:active { transform: translateY(1px); }
+
+        /* Responsive */
+        @media (max-width: 500px) {
+            .hr-app-container { padding: 20px 15px; border-radius: 15px; }
+            .logo-header img { max-width: 220px; }
+            .timer-main { font-size: 42px; }
+            .stats-grid { gap: 10px; }
+            .stat-card { padding: 15px 10px; }
+            .stat-card strong { font-size: 26px; }
+            button { padding: 15px 10px; font-size: 14px; }
+            .label-sm { font-size: 10px; }
+            .countdown-text { font-size: 18px; }
+            .countdown-number { font-size: 100px; }
+            .fullscreen-btn { width: 40px; height: 40px; top: 10px; right: 10px; }
+            .logo-frame { padding: 8px 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="hr-app-container" id="mainApp">
+    <button class="fullscreen-btn" id="btnFullscreenIcon" onclick="toggleFullscreen()" title="Buka Layar Penuh" aria-label="Buka Layar Penuh" aria-pressed="false">
+        <svg id="fullscreenIcon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+            <!-- Enter fullscreen (open corners) -->
+            <path d="M3 9V5a2 2 0 0 1 2-2h4" />
+            <path d="M21 15v4a2 2 0 0 1-2 2h-4" />
+            <path d="M9 21H5a2 2 0 0 1-2-2v-4" />
+            <path d="M15 3h4a2 2 0 0 1 2 2v4" />
+        </svg>
+    </button>
+
+    <div class="countdown-overlay" id="countdownOverlay">
+        <div class="countdown-text" id="countdownText">Persiapan</div>
+        <div class="countdown-number" id="countdownNumber"></div>
+    </div>
+
+    <div class="hr-inner">
+        <div class="logo-header">
+            <div class="logo-frame">
+                <img src="Banner Utama.png" alt="Logo Toko Cat Utama" />
+            </div>
+        </div>
+
+        <div class="label-sm">Progress Tes Kraepelin</div>
+        <div class="progress-container">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+
+        <div class="total-timer-box">
+            <span class="label-sm">Waktu Keseluruhan</span>
+            <div class="timer-main" id="totalTime">00:00:00</div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card" id="lapCard">
+                <span class="label-sm">Lap</span>
+                <strong id="displayLap">1 / 50</strong>
+            </div>
+            <div class="stat-card" id="timerCard">
+                <span class="label-sm">Waktu Lap</span>
+                <strong id="displayLapTimer">00:00</strong>
+                <span class="target-info" id="displayTarget">Target: 11.8s</span>
+            </div>
+        </div>
+
+        <div class="button-grid">
+            <button class="btn-start" id="btnStart" onclick="startTes()">Start</button>
+            <button class="btn-pause" id="btnPause" onclick="pauseTes()" disabled>Jeda</button>
+            <button class="btn-lap" id="btnLap" onclick="manualNext()" disabled>Lap</button>
+            <button class="btn-reset" id="btnReset" onclick="resetTes()">Reset</button>
+        </div>
+
+        <a href="index.html" class="btn-back">KEMBALI KE MENU</a>
+    </div>
+</div>
+
+<script>
+    // --- Kraepelin logic (cleaned, unchanged behavior) ---
+    const totalLaps = 50;
+    function getDuration(lap) {
+        if (lap >= 21 && lap <= 30) return 9800;
+        if (lap >= 43 && lap <= 47) return 9800;
+        return 11800;
+    }
+
+    let timerRef;
+    let isRunning = false;
+    let isCountingDown = false;
+    let startTime, elapsedTime = 0;
+    let lapStartTime = 0;
+    let currentLap = 1;
+    let currentTarget = getDuration(1);
+    let indonesianVoice = null;
+
+    function initVoice() {
+        const voices = window.speechSynthesis.getVoices();
+        indonesianVoice = voices.find(v => v.lang && v.lang.includes('id')) || voices[0] || null;
+    }
+    speechSynthesis.onvoiceschanged = initVoice;
+
+    function abaAba(pesan) {
+        try {
+            window.speechSynthesis.cancel();
+            const msg = new SpeechSynthesisUtterance(pesan);
+            if (indonesianVoice) msg.voice = indonesianVoice;
+            msg.pitch = 1.3;
+            msg.rate = 1.25;
+            window.speechSynthesis.speak(msg);
+        } catch (e) {
+            // Speech API may be unavailable; fail silently
+            console.warn('Speech synthesis error', e);
+        }
+    }
+
+    function startTes() {
+        if (!isRunning && !isCountingDown) {
+            if (!indonesianVoice) initVoice();
+            if (elapsedTime === 0 && currentLap === 1) {
+                mulaiHitunganMundur();
+            } else {
+                jalankanTimer();
+            }
+        }
+    }
+
+    function mulaiHitunganMundur() {
+        isCountingDown = true;
+        toggleButtons(true);
+
+        const overlay = document.getElementById('countdownOverlay');
+        const textEl = document.getElementById('countdownText');
+        const numEl = document.getElementById('countdownNumber');
+
+        overlay.classList.add('active');
+        textEl.innerText = "Persiapkan diri Anda";
+        numEl.innerText = "";
+
+        abaAba("Persiapkan diri Anda");
+
+        setTimeout(() => {
+            let hitung = 3;
+            textEl.innerText = "";
+            const intervalHitung = setInterval(() => {
+                if (hitung > 0) {
+                    numEl.innerText = hitung;
+                    abaAba(String(hitung));
+                    hitung--;
+                } else {
+                    clearInterval(intervalHitung);
+                    numEl.style.fontSize = window.innerWidth <= 500 ? "60px" : "80px";
+                    numEl.innerText = "MULAI!";
+                    abaAba("Mulai");
+                    setTimeout(() => {
+                        overlay.classList.remove('active');
+                        isCountingDown = false;
+                        numEl.style.fontSize = "";
+                        jalankanTimer();
+                    }, 800);
+                }
+            }, 1000);
+        }, 2000);
+    }
+
+    function jalankanTimer() {
+        isRunning = true;
+        startTime = Date.now() - elapsedTime;
+        timerRef = setInterval(tick, 10);
+        toggleButtons(true);
+    }
+
+    function pauseTes() {
+        if (isCountingDown) return;
+        isRunning = false;
+        clearInterval(timerRef);
+        elapsedTime = Date.now() - startTime;
+        toggleButtons(false);
+    }
+
+    function tick() {
+        const now = Date.now();
+        const totalMs = now - startTime;
+        const lapMs = totalMs - lapStartTime;
+
+        document.getElementById('totalTime').innerText = formatTime(totalMs);
+        document.getElementById('displayLapTimer').innerText = formatTimeSimple(lapMs);
+
+        if (lapMs >= currentTarget) {
+            nextLap(totalMs);
+        }
+    }
+
+    function nextLap(currentTime) {
+        if (currentLap >= totalLaps) {
+            finishTes();
+            return;
+        }
+
+        currentLap++;
+        lapStartTime = currentTime;
+        currentTarget = getDuration(currentLap);
+
+        document.getElementById('displayLap').innerText = `${currentLap} / ${totalLaps}`;
+        document.getElementById('displayTarget').innerText = `Target: ${(currentTarget/1000).toFixed(1)}s`;
+
+        const progress = (currentLap / totalLaps) * 100;
+        document.getElementById('progressBar').style.width = progress + "%";
+
+        const lapCard = document.getElementById('lapCard');
+        lapCard.classList.add('flash');
+        setTimeout(() => lapCard.classList.remove('flash'), 500);
+
+        abaAba("Berikutnya");
+    }
+
+    function manualNext() {
+        if (isRunning && !isCountingDown) nextLap(Date.now() - startTime);
+    }
+
+    function finishTes() {
+        isRunning = false;
+        clearInterval(timerRef);
+        abaAba("Selesai, mohon untuk berhenti");
+        toggleButtons(false);
+        document.getElementById('btnStart').disabled = true;
+    }
+
+    function resetTes() {
+        location.reload();
+    }
+
+    function formatTime(ms) {
+        const d = new Date(ms);
+        const m = String(d.getUTCMinutes()).padStart(2, '0');
+        const s = String(d.getUTCSeconds()).padStart(2, '0');
+        const ms_val = String(Math.floor(d.getUTCMilliseconds() / 10)).padStart(2, '0');
+        return `${m}:${s}:${ms_val}`;
+    }
+
+    function formatTimeSimple(ms) {
+        const d = new Date(ms);
+        const s = String(d.getUTCSeconds()).padStart(2, '0');
+        const ms_val = String(Math.floor(d.getUTCMilliseconds() / 10)).padStart(2, '0');
+        return `${s}:${ms_val}`;
+    }
+
+    function toggleButtons(running) {
+        document.getElementById('btnStart').disabled = running;
+        document.getElementById('btnPause').disabled = !running;
+        document.getElementById('btnLap').disabled = !running;
+    }
+
+    // --- Fullscreen helpers: toggling and updating icon ---
+    function toggleFullscreen() {
+        const elem = document.documentElement;
+        if (!document.fullscreenElement) {
+            if (elem.requestFullscreen) elem.requestFullscreen();
+            else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+            else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
+        } else {
+            if (document.exitFullscreen) document.exitFullscreen();
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            else if (document.msExitFullscreen) document.msExitFullscreen();
+        }
+    }
+
+    function updateFullscreenIcon() {
+        const svg = document.getElementById('fullscreenIcon');
+        const btn = document.getElementById('btnFullscreenIcon');
+        const inFullscreen = !!document.fullscreenElement;
+        btn.setAttribute('aria-pressed', String(inFullscreen));
+        if (inFullscreen) {
+            // Exit fullscreen icon (two opposing corners)
+            svg.innerHTML = `
+                <path d="M9 3H5a2 2 0 0 0-2 2v4"/>
+                <path d="M21 15v4a2 2 0 0 1-2 2h-4"/>
+                <path d="M15 21h4a2 2 0 0 0 2-2v-4"/>
+                <path d="M3 9V5a2 2 0 0 1 2-2h4"/>
+            `;
+        } else {
+            // Enter fullscreen icon (open corners)
+            svg.innerHTML = `
+                <path d="M3 9V5a2 2 0 0 1 2-2h4"/>
+                <path d="M21 15v4a2 2 0 0 1-2 2h-4"/>
+                <path d="M9 21H5a2 2 0 0 1-2-2v-4"/>
+                <path d="M15 3h4a2 2 0 0 1 2 2v4"/>
+            `;
+        }
+    }
+    document.addEventListener('fullscreenchange', updateFullscreenIcon);
+    // initial icon state
+    updateFullscreenIcon();
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space') {
+            e.preventDefault();
+            if (isRunning) pauseTes();
+            else startTes();
+        }
+        if (e.code === 'KeyL') manualNext();
+    });
+</script>
+</body>
+</html>
