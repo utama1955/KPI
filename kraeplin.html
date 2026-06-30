@@ -67,7 +67,7 @@
             cursor: pointer;
             transition: transform .12s ease, box-shadow .12s ease;
             padding: 6px;
-            color: var(--icon-color); /* currentColor for svg stroke */
+            color: var(--icon-color);
         }
         .fullscreen-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.16); }
         .fullscreen-btn:active { transform: translateY(0); }
@@ -321,8 +321,9 @@
 </div>
 
 <script>
-    // --- Kraepelin logic (cleaned, unchanged behavior) ---
+    // --- Kraepelin Test Logic ---
     const totalLaps = 50;
+    
     function getDuration(lap) {
         if (lap >= 21 && lap <= 30) return 9800;
         if (lap >= 43 && lap <= 47) return 9800;
@@ -338,6 +339,7 @@
     let currentTarget = getDuration(1);
     let indonesianVoice = null;
 
+    // Voice synthesis initialization
     function initVoice() {
         const voices = window.speechSynthesis.getVoices();
         indonesianVoice = voices.find(v => v.lang && v.lang.includes('id')) || voices[0] || null;
@@ -353,7 +355,6 @@
             msg.rate = 1.25;
             window.speechSynthesis.speak(msg);
         } catch (e) {
-            // Speech API may be unavailable; fail silently
             console.warn('Speech synthesis error', e);
         }
     }
@@ -410,6 +411,7 @@
     function jalankanTimer() {
         isRunning = true;
         startTime = Date.now() - elapsedTime;
+        lapStartTime = startTime;  // FIX: Initialize lapStartTime
         timerRef = setInterval(tick, 10);
         toggleButtons(true);
     }
@@ -455,7 +457,7 @@
         lapCard.classList.add('flash');
         setTimeout(() => lapCard.classList.remove('flash'), 500);
 
-        abaAba("Berikutnya");
+        abaAba("Berikutnya");  // Audio feedback for lap completion
     }
 
     function manualNext() {
@@ -495,7 +497,7 @@
         document.getElementById('btnLap').disabled = !running;
     }
 
-    // --- Fullscreen helpers: toggling and updating icon ---
+    // --- Fullscreen Helpers ---
     function toggleFullscreen() {
         const elem = document.documentElement;
         if (!document.fullscreenElement) {
@@ -533,10 +535,9 @@
         }
     }
     document.addEventListener('fullscreenchange', updateFullscreenIcon);
-    // initial icon state
     updateFullscreenIcon();
 
-    // Keyboard shortcuts
+    // --- Keyboard Shortcuts ---
     document.addEventListener('keydown', (e) => {
         if (e.code === 'Space') {
             e.preventDefault();
