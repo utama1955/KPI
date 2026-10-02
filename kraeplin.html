@@ -67,7 +67,7 @@
             cursor: pointer;
             transition: transform .12s ease, box-shadow .12s ease;
             padding: 6px;
-            color: var(--icon-color); /* currentColor for svg stroke */
+            color: var(--icon-color);
         }
         .fullscreen-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.16); }
         .fullscreen-btn:active { transform: translateY(0); }
@@ -233,20 +233,6 @@
             100% { background-color: white; }
         }
 
-        .btn-back {
-            display: inline-block;
-            margin: 18px auto 0;
-            padding: 12px 20px;
-            background: #0f1720;
-            color: #fff;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 700;
-            letter-spacing: 0.6px;
-            box-shadow: 0 6px 14px rgba(15,23,32,0.12);
-        }
-        .btn-back:active { transform: translateY(1px); }
-
         /* Responsive */
         @media (max-width: 500px) {
             .hr-app-container { padding: 20px 15px; border-radius: 15px; }
@@ -269,7 +255,6 @@
 <div class="hr-app-container" id="mainApp">
     <button class="fullscreen-btn" id="btnFullscreenIcon" onclick="toggleFullscreen()" title="Buka Layar Penuh" aria-label="Buka Layar Penuh" aria-pressed="false">
         <svg id="fullscreenIcon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-            <!-- Enter fullscreen (open corners) -->
             <path d="M3 9V5a2 2 0 0 1 2-2h4" />
             <path d="M21 15v4a2 2 0 0 1-2 2h-4" />
             <path d="M9 21H5a2 2 0 0 1-2-2v-4" />
@@ -307,7 +292,7 @@
             <div class="stat-card" id="timerCard">
                 <span class="label-sm">Waktu Lap</span>
                 <strong id="displayLapTimer">00:00</strong>
-                <span class="target-info" id="displayTarget">Target: 13.5s</span>
+                <span class="target-info" id="displayTarget">Target: 11.8s</span>
             </div>
         </div>
 
@@ -321,10 +306,32 @@
 </div>
 
 <script>
-    // --- Kraepelin logic ---
+    // --- DAFTAR FILE AUDIO MP3 ---
+    const audioFiles = {
+        'persiapan': new Audio('persiapan.mp3'),
+        '3': new Audio('tiga.mp3'),
+        '2': new Audio('dua.mp3'),
+        '1': new Audio('satu.mp3'),
+        'mulai': new Audio('mulai.mp3'),
+        'pindah': new Audio('pindah.mp3'),
+        'selesai': new Audio('selesai.mp3')
+    };
+
+    function abaAba(key) {
+        if (audioFiles[key]) {
+            audioFiles[key].currentTime = 0; // Reset ke posisi awal jika diputar berulang
+            audioFiles[key].play().catch(e => {
+                console.warn('Gagal memutar file audio:', key, e);
+            });
+        }
+    }
+
+    // --- Kraepelin logic (TIMING ASLI ASAL/ASLI DARI FILE DUA) ---
     const totalLaps = 50;
     function getDuration(lap) {
-        return 13500; // Durasi seragam 13,5 detik untuk seluruh lap
+        if (lap >= 21 && lap <= 30) return 9800;
+        if (lap >= 43 && lap <= 47) return 9800;
+        return 11800;
     }
 
     let timerRef;
@@ -334,31 +341,9 @@
     let lapStartTime = 0;
     let currentLap = 1;
     let currentTarget = getDuration(1);
-    let indonesianVoice = null;
-
-    // Mengambil voice bawaan browser dengan Bahasa Indonesia
-    function initVoice() {
-        const voices = window.speechSynthesis.getVoices();
-        indonesianVoice = voices.find(v => v.lang && v.lang.includes('id')) || voices[0] || null;
-    }
-    speechSynthesis.onvoiceschanged = initVoice;
-
-    function abaAba(pesan) {
-        try {
-            window.speechSynthesis.cancel();
-            const msg = new SpeechSynthesisUtterance(pesan);
-            if (indonesianVoice) msg.voice = indonesianVoice;
-            msg.pitch = 1.3;
-            msg.rate = 1.25;
-            window.speechSynthesis.speak(msg);
-        } catch (e) {
-            console.warn('Speech synthesis error', e);
-        }
-    }
 
     function startTes() {
         if (!isRunning && !isCountingDown) {
-            if (!indonesianVoice) initVoice();
             if (elapsedTime === 0 && currentLap === 1) {
                 mulaiHitunganMundur();
             } else {
@@ -379,7 +364,7 @@
         textEl.innerText = "Persiapkan diri Anda";
         numEl.innerText = "";
 
-        abaAba("Persiapkan diri Anda");
+        abaAba("persiapan");
 
         setTimeout(() => {
             let hitung = 3;
@@ -393,7 +378,7 @@
                     clearInterval(intervalHitung);
                     numEl.style.fontSize = window.innerWidth <= 500 ? "60px" : "80px";
                     numEl.innerText = "MULAI!";
-                    abaAba("Mulai");
+                    abaAba("mulai");
                     setTimeout(() => {
                         overlay.classList.remove('active');
                         isCountingDown = false;
@@ -453,7 +438,7 @@
         lapCard.classList.add('flash');
         setTimeout(() => lapCard.classList.remove('flash'), 500);
 
-        abaAba("Berikutnya");
+        abaAba("pindah");
     }
 
     function manualNext() {
@@ -463,7 +448,7 @@
     function finishTes() {
         isRunning = false;
         clearInterval(timerRef);
-        abaAba("Selesai, mohon untuk berhenti");
+        abaAba("selesai");
         toggleButtons(false);
         document.getElementById('btnStart').disabled = true;
     }
