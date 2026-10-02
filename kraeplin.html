@@ -307,7 +307,7 @@
             <div class="stat-card" id="timerCard">
                 <span class="label-sm">Waktu Lap</span>
                 <strong id="displayLapTimer">00:00</strong>
-                <span class="target-info" id="displayTarget">Target: 11.8s</span>
+                <span class="target-info" id="displayTarget">Target: 13.5s</span>
             </div>
         </div>
 
@@ -321,12 +321,10 @@
 </div>
 
 <script>
-    // --- Kraepelin logic (cleaned, unchanged behavior) ---
+    // --- Kraepelin logic ---
     const totalLaps = 50;
     function getDuration(lap) {
-        if (lap >= 21 && lap <= 30) return 9800;
-        if (lap >= 43 && lap <= 47) return 9800;
-        return 11800;
+        return 13500; // Durasi seragam 13,5 detik untuk seluruh lap
     }
 
     let timerRef;
@@ -338,6 +336,7 @@
     let currentTarget = getDuration(1);
     let indonesianVoice = null;
 
+    // Mengambil voice bawaan browser dengan Bahasa Indonesia
     function initVoice() {
         const voices = window.speechSynthesis.getVoices();
         indonesianVoice = voices.find(v => v.lang && v.lang.includes('id')) || voices[0] || null;
@@ -353,7 +352,6 @@
             msg.rate = 1.25;
             window.speechSynthesis.speak(msg);
         } catch (e) {
-            // Speech API may be unavailable; fail silently
             console.warn('Speech synthesis error', e);
         }
     }
@@ -495,7 +493,7 @@
         document.getElementById('btnLap').disabled = !running;
     }
 
-    // --- Fullscreen helpers: toggling and updating icon ---
+    // --- Fullscreen helpers ---
     function toggleFullscreen() {
         const elem = document.documentElement;
         if (!document.fullscreenElement) {
@@ -515,7 +513,6 @@
         const inFullscreen = !!document.fullscreenElement;
         btn.setAttribute('aria-pressed', String(inFullscreen));
         if (inFullscreen) {
-            // Exit fullscreen icon (two opposing corners)
             svg.innerHTML = `
                 <path d="M9 3H5a2 2 0 0 0-2 2v4"/>
                 <path d="M21 15v4a2 2 0 0 1-2 2h-4"/>
@@ -523,7 +520,6 @@
                 <path d="M3 9V5a2 2 0 0 1 2-2h4"/>
             `;
         } else {
-            // Enter fullscreen icon (open corners)
             svg.innerHTML = `
                 <path d="M3 9V5a2 2 0 0 1 2-2h4"/>
                 <path d="M21 15v4a2 2 0 0 1-2 2h-4"/>
@@ -533,7 +529,6 @@
         }
     }
     document.addEventListener('fullscreenchange', updateFullscreenIcon);
-    // initial icon state
     updateFullscreenIcon();
 
     // Keyboard shortcuts
