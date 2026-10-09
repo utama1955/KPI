@@ -1,0 +1,20 @@
+{
+  "name": "Sistem Tes Kraepelin - Toko Cat Utama",
+  "short_name": "Tes Kraepelin",
+  "start_url": "kraeplinv2.html", 
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#2c5364",
+  "icons": [
+    {
+      "src": "logoku.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "logoku.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
