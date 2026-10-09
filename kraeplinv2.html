@@ -448,7 +448,8 @@
     }
 
     function nextLap(currentTime) {
-        if (currentLap >= totalLaps) {
+        if (currentLap >= totalLaps)
+        if ('vibrate' in navigator) navigator.vibrate(200);{
             finishTes();
             return;
         }
@@ -478,6 +479,7 @@
     function finishTes() {
         isRunning = false;
         clearInterval(timerRef);
+        navigator.vibrate([500, 200, 500]);
         
         // Putar Suara Selesai
         mainkanSuara('selesai');
