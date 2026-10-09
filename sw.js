@@ -2,7 +2,8 @@ const CACHE_NAME = 'kraepelin-cache-v1';
 const urlsToCache = [
   '/',
   '/kraeplinv2.html',
-  '/Banner Utama.png',
+  '/logoku.png',
+  '/manifest.json',
   '/persiapan.mp3',
   '/tiga.mp3',
   '/dua.mp3',
