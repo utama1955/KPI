@@ -577,11 +577,33 @@
     });
 
     // konfirmasi saat keluar
+    // --- 1. Mencegah Refresh (Tarik ke Bawah) / Tutup Tab (Browser) ---
     window.addEventListener('beforeunload', function (e) {
-    if (isRunning || isCountingDown) {
-        e.preventDefault();
-        e.returnValue = ''; // Memunculkan pop-up peringatan bawaan browser
-    }
+        if (isRunning || isCountingDown) {
+            e.preventDefault();
+            e.returnValue = ''; 
+        }
+    });
+
+    // Memasukkan riwayat palsu agar tombol back tertahan
+    history.pushState(null, null, location.href);
+    window.addEventListener('popstate', function (event) {
+        if (isRunning || isCountingDown) {
+            // Memunculkan pop-up konfirmasi manual
+            const konfirmasi = confirm("⚠️ TES SEDANG BERJALAN!\n\nApakah Anda yakin ingin keluar dan membatalkan tes?");
+            
+            if (konfirmasi) {
+                // Jika pilih 'OK', matikan sistem dan biarkan keluar
+                isRunning = false;
+                history.back(); 
+            } else {
+                // Jika pilih 'Cancel', tahan layar dan masukkan riwayat palsu lagi
+                history.pushState(null, null, location.href);
+            }
+        } else {
+            // Jika tes belum mulai dan user menekan back, biarkan kembali normal
+            history.back();
+        }
     });
 
     // --- Fitur Mencegah Layar Mati (Wake Lock) ---
