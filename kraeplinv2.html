@@ -341,6 +341,22 @@
         'selesai': new Audio('selesai.mp3')
     };
 
+    // --- Preload semua audio agar tidak delay saat diputar ---
+    Object.values(audioFiles).forEach(audio => {
+        audio.preload = 'auto';
+        audio.load();
+    });
+
+    // Fungsi untuk memutar audio berdasarkan kunci
+    function mainkanSuara(key) {
+        if (audioFiles[key]) {
+            audioFiles[key].currentTime = 0; // Riset ke awal jika audio diputar berulang
+            audioFiles[key].play().catch(e => {
+                console.warn('Gagal memutar audio:', key, e);
+            });
+        }
+    }
+
     // Fungsi untuk memutar audio berdasarkan kunci
     function mainkanSuara(key) {
         if (audioFiles[key]) {
@@ -483,6 +499,11 @@
         
         // Putar Suara Selesai
         mainkanSuara('selesai');
+
+        // Ubah tampilan visual
+        const timerMain = document.getElementById('totalTime');
+        timerMain.style.color = 'var(--success)'; // Berubah jadi hijau
+        document.getElementById('displayLapTimer').innerText = "SELESAI";
         
         toggleButtons(false);
         document.getElementById('btnStart').disabled = true;
@@ -559,6 +580,14 @@
             else startTes();
         }
         if (e.code === 'KeyL') manualNext();
+    });
+
+    // konfirmasi saat keluar
+    window.addEventListener('beforeunload', function (e) {
+    if (isRunning || isCountingDown) {
+        e.preventDefault();
+        e.returnValue = ''; // Memunculkan pop-up peringatan bawaan browser
+    }
     });
 
     // --- Fitur Mencegah Layar Mati (Wake Lock) ---
