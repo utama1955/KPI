@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2c5364">
+    <!-- Dukungan PWA khusus untuk iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Tes Kraepelin">
+    <link rel="apple-touch-icon" href="logoku.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Sistem Tes Kraepelin - Toko Cat Utama</title>
     <style>
@@ -362,6 +367,9 @@
 
     function startTes() {
         if (!isRunning && !isCountingDown) {
+            // Panggil fungsi pencegah layar mati di sini
+            aktifkanWakeLock(); 
+
             if (elapsedTime === 0 && currentLap === 1) {
                 mulaiHitunganMundur();
             } else {
@@ -550,6 +558,36 @@
         }
         if (e.code === 'KeyL') manualNext();
     });
+
+    // --- Fitur Mencegah Layar Mati (Wake Lock) ---
+    let wakeLock = null;
+
+    async function aktifkanWakeLock() {
+        try {
+            // Periksa apakah browser mendukung fitur Wake Lock
+            if ('wakeLock' in navigator) {
+                wakeLock = await navigator.wakeLock.request('screen');
+                console.log('Wake Lock aktif: Layar tidak akan meredup.');
+
+                // Jika fitur dilepas (misal karena baterai lemah), log peringatan
+                wakeLock.addEventListener('release', () => {
+                    console.log('Wake Lock dilepas.');
+                });
+            } else {
+                console.log('Browser tidak mendukung fitur Wake Lock.');
+            }
+        } catch (err) {
+            console.error(`Gagal mengaktifkan Wake Lock: ${err.name}, ${err.message}`);
+        }
+    }
+
+    // Pastikan Wake Lock aktif kembali jika user berpindah aplikasi lalu kembali lagi
+    document.addEventListener('visibilitychange', async () => {
+        if (wakeLock !== null && document.visibilityState === 'visible') {
+            await aktifkanWakeLock();
+        }
+    });
+    
 </script>
 </body>
 </html>
