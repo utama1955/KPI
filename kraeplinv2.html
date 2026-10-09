@@ -357,16 +357,6 @@
         }
     }
 
-    // Fungsi untuk memutar audio berdasarkan kunci
-    function mainkanSuara(key) {
-        if (audioFiles[key]) {
-            audioFiles[key].currentTime = 0; // Riset ke awal jika audio diputar berulang
-            audioFiles[key].play().catch(e => {
-                console.warn('Gagal memutar audio:', key, e);
-            });
-        }
-    }
-
     // --- Kraepelin logic ---
     const totalLaps = 50;
     function getDuration(lap) {
@@ -464,11 +454,13 @@
     }
 
     function nextLap(currentTime) {
-        if (currentLap >= totalLaps)
-        if ('vibrate' in navigator) navigator.vibrate(200);{
+        if (currentLap >= totalLaps) {
             finishTes();
             return;
         }
+
+        // Efek getar saat pindah lap diletakkan di sini
+        if ('vibrate' in navigator) navigator.vibrate(200);
 
         currentLap++;
         lapStartTime = currentTime;
@@ -495,7 +487,9 @@
     function finishTes() {
         isRunning = false;
         clearInterval(timerRef);
-        navigator.vibrate([500, 200, 500]);
+        
+        // Cek dulu apakah browser mendukung fitur getar
+        if ('vibrate' in navigator) navigator.vibrate([500, 200, 500]);
         
         // Putar Suara Selesai
         mainkanSuara('selesai');
